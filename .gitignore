@@ -1,2 +1,4 @@
 node_modules/
 img/
+fb_config.json
+cloudinary_config.json
