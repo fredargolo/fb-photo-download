@@ -1,4 +1,5 @@
 node_modules/
-img/
+img/*
+!img/.gitkeep
 fb_config.json
 cloudinary_config.json
