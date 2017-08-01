@@ -16,7 +16,7 @@ and Select permission
 ![Graph token](https://raw.githubusercontent.com/MaxySpark/fb-photo-album-download/master/Screenshot/fbs4.jpg "Graph Api Token")
 
 #### Options
-```
+```sh
   --album, -n, -a          Name Of The Album(default: Timeline Photos)  [string]
   --pages, -p              Name Of The page (default: me)               [string]
   --since_date, -s         Since date (default: today)
