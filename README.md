@@ -11,14 +11,13 @@ npm install
 
 Get a Facebook Api Token
 [Get Your Fb Graph Api token Here](https://developers.facebook.com/tools/explorer "Graph Api explorer")
-
-And Select permission
+and Select permission
 
 ![Graph token](https://raw.githubusercontent.com/MaxySpark/fb-photo-album-download/master/Screenshot/fbs4.jpg "Graph Api Token")
 
 
-##### Usage
+#### Usage
 ```
-node app --album "Album Name" --page "Page Name" --since_date "Since Date"
-node app --help
+$node app --album "Album Name" --page "Page Name" --since_date "Since Date"
+$node app --help
 ```
