@@ -17,6 +17,7 @@ and Select permission
 
 #### Options
 ```sh
+node app --help
   --album, -n, -a          Name Of The Album(default: Timeline Photos)  [string]
   --pages, -p              Name Of The page (default: me)               [string]
   --since_date, -s         Since date (default: today)
@@ -27,6 +28,6 @@ and Select permission
 
 #### Usage
 ```
-$node app --album "Album Name" --page "Page Name" --since_date "Since Date"
-$node app --help
+node app --album "Album Name" --page "Page Name" --since_date "Since Date"
+
 ```
