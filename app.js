@@ -2,6 +2,8 @@ var _ = require('underscore');
 var request = require('request');
 var FB = require('fb');
 var fs = require('fs');
+var crypto = require('crypto');
+var moment = require('moment');
 var argv = require('yargs').option({
     album : {
         //demand : true,
@@ -16,19 +18,20 @@ var argv = require('yargs').option({
     },
     since_date : {
         alias: 's',
-        description: "Since date (default: 2017-01-01)",
+        description: "Since date (default: today)",
         type: 'datetime'
-    },
-    download_locally : {
-        alias: 'd',
-        description: "Download locally (default: false)",
-        type: 'boolean'
     },
     upload_cloudinary : {
         alias: 'c',
         description: "Upload cloudinary (default: false)",
         type: 'boolean'
+    },
+    cloudinary_folder : {
+        alias: 'f',
+        description: "cloudinary folder",
+        type: 'string'
     }
+
 }).help('help').alias('help','h').argv
 
 const cloudinary = require('cloudinary');
@@ -39,8 +42,11 @@ cloudinary.config({
   api_secret: CLOUDINARY_CONFIG.api_secret
 });
 
+// Preencha o arquivo fb_config.json com sua aplicacao do FB
 var FACEBOOK_CONFIG = require('./fb_config.json');
 var my_token = FACEBOOK_CONFIG.client_id+'|'+FACEBOOK_CONFIG.client_secret;
+
+//Caso nao tenha aplicacao coloque o token diretamente na variavel abaixo
 //var my_token = "EAACEdEose0cBAAfVsPyZBCWmZCswAmjYZAOsLNZAveEhS0WGLHjDfDR5yGqAGLr54u25rxEZB69coogswvrGZARXaYDsIcuIgMgZBIej93tPxjbUQXIryp87mK7FCoKHIsFXWhbqt3cVyQMaBxEREvzOPYK26m0Y7qkXCKFzvzsY7ciLXCX78kMiist3V7KKNEZD";
 
 FB.setAccessToken(my_token);
@@ -50,31 +56,37 @@ var i = 0;
 var j = 0;
 var album_name = argv.album || "Timeline Photos";
 var page_name = argv.pages || "me";
-var since_date = argv.since_date || "2017-06-01";
+var since_date = argv.since_date || moment().format('YYYY-MM-DD');
 var upload_cloudinary = argv.upload_cloudinary || false;
 var download_locally = argv.download_locally || false;
+var cloudinary_folder = argv.cloudinary_folder;
 
 console.log("album_name="+album_name);
 console.log("page_name="+page_name);
 console.log("since_date="+since_date);
-console.log("download_locally="+download_locally);
 console.log("upload_cloudinary="+upload_cloudinary);
+console.log("cloudinary_folder="+cloudinary_folder);
 
 
+//Funcao para baixar os arquivos localmente com o nome do seu hash e com a opcao de subir no cloudinary
 function downloadLoop(urls) {
             for(i;i<urls.length;i++){
-                if (download_locally) {
-                  request(urls[i]).pipe(fs.createWriteStream('img/'+page_name+'_'+since_date+'_'+(i+1)+'.jpg')).on('finish', function(response) {
-                      console.log("Download Completed : "+(++j)+'/'+i);
+                request(urls[i], {encoding: 'binary'}, function(error, response, body) {
+                    console.log("Download Completed");
+                    var md5 = crypto.createHash('md5');
+                    md5.update(body, 'binary');
+                    var hash = md5.digest('hex');
+                    fs.writeFile('img/'+hash +'.jpg', body, 'binary',function (response){
+                        console.log("Escreveu arquivo");
+                        if (upload_cloudinary) {
+                          cloudinary.uploader.upload('img/'+hash +'.jpg', function(result) {console.log(result)},{public_id:'img/'+hash +'.jpg', tags:page_name, folder: cloudinary_folder, resource_type: "image", phash: 'true'});
+                        }
                     });
-                }
-                if (upload_cloudinary) {
-                  console.log("Upload cloudinary");
-                  cloudinary.uploader.upload(urls[i], function(result) {console.log(result)},{use_filename:true, folder: 'anti_vasco', phash: 'true'});
-                }
+                })
             }
 }
 
+//Funcao para navegar nas paginas do facebook
 function download(next) {
         request({
             url: next,

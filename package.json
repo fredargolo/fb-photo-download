@@ -13,10 +13,11 @@
   "author": "Fred",
   "license": "ISC",
   "dependencies": {
+    "cloudinary": "^1.9.0",
     "fb": "^2.0.0",
+    "moment": "^2.18.1",
     "request": "^2.81.0",
     "underscore": "^1.8.3",
-    "yargs": "^8.0.2",
-    "cloudinary": "^1.9.0"
+    "yargs": "^8.0.2"
   }
 }
